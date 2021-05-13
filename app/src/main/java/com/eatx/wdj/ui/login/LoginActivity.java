@@ -17,13 +17,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,14 +31,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.eatx.wdj.R;
-import com.eatx.wdj.ui.Register.Register;
-import com.eatx.wdj.ui.login.ui.main.MainFragment;
+import com.eatx.wdj.ui.main.PhoneAuth;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.royrodriguez.transitionbutton.TransitionButton;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     EditText usernameEditText, passwordEditText;
+    private boolean isSuccessful = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +49,8 @@ public class LoginActivity extends AppCompatActivity {
                 .get(LoginViewModel.class);
         usernameEditText = (EditText) findViewById(R.id.username);
         passwordEditText = (EditText) findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
-        final Button RegisterButton = findViewById(R.id.goRegister);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        final TransitionButton loginButton = findViewById(R.id.login);
+        final MaterialButton RegisterButton = findViewById(R.id.goRegister);
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -76,7 +74,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult == null) {
                     return;
                 }
-                loadingProgressBar.setVisibility(View.GONE);
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
@@ -124,18 +121,38 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
                 new Task().execute();
-//                loginViewModel.login(usernameEditText.getText().toString(),
-//                        passwordEditText.getText().toString());
+                loginButton.startAnimation();
+                // Do your networking task or background work here.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        // Choose a stop animation if your call was succesful or not
+                        if (isSuccessful) {
+                            loginButton.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND, new TransitionButton.OnAnimationStopEndListener() {
+                                @Override
+                                public void onAnimationStopEnd() {
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.putExtra("id",usernameEditText.getText().toString());
+                                    System.out.println(usernameEditText.getText().toString());
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                }
+                            });
+                        } else if(!isSuccessful) {
+                            loginButton.stopAnimation(TransitionButton.StopAnimationStyle.SHAKE, null);
+                        }
+                    }
+                }, 500);
             }
         });
         RegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             System.out.println("회원가입 버튼이 클릭됨");
-            loadingProgressBar.setVisibility(View.GONE);
-            Intent intent = new Intent(LoginActivity.this, Register.class
+            Intent intent = new Intent(LoginActivity.this, PhoneAuth.class
 
             );
             startActivity(intent);
@@ -143,10 +160,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    class Task extends AsyncTask<Void,Void,Void> {
+    class Task extends AsyncTask<Void, Void, Boolean> {
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Boolean doInBackground(Void... voids) {
             PreparedStatement st;
             ResultSet rs;
             String username = usernameEditText.getText().toString();
@@ -162,26 +179,31 @@ public class LoginActivity extends AppCompatActivity {
                 rs = st.executeQuery();
 
                 if(rs.next()) {
+                    isSuccessful = true;
                     System.out.println("로그인 성공");
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    return isSuccessful;
                 } else {
-                    System.out.println("아이디나 비밀번호를 확인해주세요");
+                    Handler mHandler = new Handler(Looper.getMainLooper());
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 사용하고자 하는 코드
+                            isSuccessful = false;
+
+                            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),"아이디나 비밀번호를 확인해주세요",Snackbar.LENGTH_SHORT);
+                            snackbar.setAnchorView(findViewById(R.id.goRegister));
+                            snackbar.show();
+                        }
+                    }, 0);
                 }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
                 System.out.println("로그인 실패");
+                return isSuccessful;
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-            try {
-                connection.close();  // 연결해제
-                System.out.println("연결해제");
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-                System.out.println("연결해제 실패");
-            }
-            return null;
+            return isSuccessful;
         }
     }
     private void updateUiWithUser(LoggedInUserView model) {

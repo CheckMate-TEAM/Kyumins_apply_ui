@@ -21,4 +21,10 @@
         android:title="@string/menu4"
         android:icon="@drawable/outline_developer_board_white_48"/>
 
+    <item
+        android:id="@+id/item4"
+        android:title="자습신청"
+        android:icon="@drawable/outline_assignment_white_48" />
+
+
 </menu>

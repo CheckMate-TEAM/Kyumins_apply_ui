@@ -1,30 +1,38 @@
 package com.eatx.wdj.ui.login;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
-import com.eatx.wdj.ui.login.ui.main.Board;
-import com.eatx.wdj.ui.login.ui.main.MainFragment;
+import com.eatx.wdj.ui.main.Board;
+import com.eatx.wdj.ui.main.Check;
+import com.eatx.wdj.ui.main.CheckActivity;
+import com.eatx.wdj.ui.main.MainFragment;
 
-import me.ibrahimsn.lib.BottomBarItem;
 import me.ibrahimsn.lib.OnItemSelectedListener;
-import me.ibrahimsn.lib.SmoothBottomBar;
-import com.eatx.wdj.R;
-import com.eatx.wdj.ui.login.ui.main.SecondFragment;
-import com.eatx.wdj.ui.login.ui.main.TimeTable;
 
-import java.sql.Time;
+import com.eatx.wdj.R;
+import com.eatx.wdj.ui.main.SecondFragment;
+import com.eatx.wdj.ui.main.TimeTable;
+import com.eatx.wdj.ui.main.applyInfo;
+import com.eatx.wdj.ui.main.applySelfStudy;
+
 
 public class MainActivity extends AppCompatActivity {
+    private long backpressedTime = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
         me.ibrahimsn.lib.SmoothBottomBar bottomBar = findViewById(R.id.bottomBar);
+        bottomBar.bringToFront();
         bottomBar.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public boolean onItemSelect(int i) {
@@ -45,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.container, new Board()).commit();
                     break;
+                    case 4:
+                        getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, new applySelfStudy()).commit();
+
+                    break;
                 }
                 return true;
             }
@@ -59,5 +72,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_rigth, R.anim.enter_from_right, R.anim.exit_to_rigth);
+        fragmentTransaction.replace(R.id.container, fragment).commit();
+    }
 
+    public void goCheck(View v) {
+        Intent intent = new Intent(this, Check.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (System.currentTimeMillis() > backpressedTime + 2000) {
+            backpressedTime = System.currentTimeMillis();
+            Toast.makeText(this, "\'뒤로\' 버튼을 한번 더 누르시면 앱이 종료됩니다.", Toast.LENGTH_SHORT).show();
+        } else if (System.currentTimeMillis() <= backpressedTime + 2000) {
+            finish();
+            return;
+        }
+
+    }
 }
+
