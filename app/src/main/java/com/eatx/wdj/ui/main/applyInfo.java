@@ -64,6 +64,7 @@ public class applyInfo extends Fragment {
             @Override
             public void onClick(View v) {
                 infoText.setText(id + "님 " + text + " " + selected + " 신청되었습니다.");
+                System.out.println(selected);
             }
         });
 
