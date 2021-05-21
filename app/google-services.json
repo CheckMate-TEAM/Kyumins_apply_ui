@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "37941519859",
+    "project_id": "checkmate-sms",
+    "storage_bucket": "checkmate-sms.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37941519859:android:1a4a4eca22fef828795e86",
+        "android_client_info": {
+          "package_name": "com.eatx.wdj"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "37941519859-2e1j95u1qvp5p3p1f5bjn7e1e4i5gc3e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eatx.wdj",
+            "certificate_hash": "a241d00b37bae5f29743c706208b8db8a9969345"
+          }
+        },
+        {
+          "client_id": "37941519859-d0tmj3hcqhiaicp6m18aokqonv82kt4o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOU9LO6GN40SCL__ppSSLdiSEhhYWGoGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "37941519859-d0tmj3hcqhiaicp6m18aokqonv82kt4o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -47,5 +47,5 @@
             android:label="@string/title_activity_register"
             android:theme="@style/Theme.WDJ.NoActionBar" />
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>

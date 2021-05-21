@@ -23,6 +23,9 @@ import com.eatx.wdj.ui.main.TimeTable;
 import com.eatx.wdj.ui.main.applyInfo;
 import com.eatx.wdj.ui.main.applySelfStudy;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class MainActivity extends AppCompatActivity {
     private long backpressedTime = 0;
@@ -69,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
     }
 
     public void replaceFragment(Fragment fragment) {
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_rigth, R.anim.enter_from_right, R.anim.exit_to_rigth);
         fragmentTransaction.replace(R.id.container, fragment).commit();
     }
+
 
     public void goCheck(View v) {
         Intent intent = new Intent(this, Check.class);
